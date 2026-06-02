@@ -1,0 +1,87 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  name           String
+  currentStreak  Int       @default(0)
+  xpProgress     Int       @default(0)
+  flowLevel      Int       @default(1)
+  totalHours     Float     @default(0.0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  subjects       Subject[]
+  tasks          Task[]
+  notes          Note[]
+  breaks         Break[]
+}
+
+model Subject {
+  id               String   @id @default(uuid())
+  title            String
+  progress         Int      @default(0)
+  info             String   @default("")
+  tags             String[]
+  icon             String   @default("menu_book")
+  colorClass       String   @default("text-primary bg-primary/10")
+  borderColorClass String   @default("stroke-primary")
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Task {
+  id            String   @id @default(uuid())
+  title         String
+  description   String   @default("")
+  subject       String
+  subjectColor  String
+  priority      String   @default("medium") // high, medium, low, none
+  status        String   @default("not-started") // not-started, in-progress, revision, completed
+  estimatedTime String   @default("")
+  dueDate       String   @default("")
+  progress      Int      @default(0)
+  statusText    String   @default("")
+  score         String   @default("")
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Note {
+  id           String   @id @default(uuid())
+  title        String
+  subject      String
+  subjectColor String
+  date         String   @default("")
+  readTime     String   @default("")
+  content      String   @db.Text
+  imageUrl     String   @default("")
+  imageAlt     String   @default("")
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Break {
+  id        String   @id @default(uuid())
+  title     String
+  time      String
+  desc      String
+  icon      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
