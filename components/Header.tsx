@@ -16,39 +16,12 @@ interface Notification {
 
 export default function Header() {
   const router = useRouter();
-  const [streak, setStreak] = useState(12);
+  const [streak, setStreak] = useState(0);
   const [name, setName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      title: "Welcome to StudyFlow!",
-      description: "Your dynamic workspace and default subjects have been initialized.",
-      time: "Just now",
-      read: false,
-      icon: "auto_stories",
-      color: "text-primary bg-primary/10 border-primary/20"
-    },
-    {
-      id: "2",
-      title: "Streak Milestone",
-      description: "Keep it up! You are maintaining a 12-day study streak.",
-      time: "2 hours ago",
-      read: false,
-      icon: "local_fire_department",
-      color: "text-secondary bg-secondary/10 border-secondary/20"
-    },
-    {
-      id: "3",
-      title: "Level Up!",
-      description: "Congratulations, you have reached Flow Level 24.",
-      time: "1 day ago",
-      read: true,
-      icon: "military_tech",
-      color: "text-tertiary bg-tertiary/10 border-tertiary/20"
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  // Fetch user info
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
@@ -56,18 +29,21 @@ export default function Header() {
         if (data.success && data.user) {
           setStreak(data.user.currentStreak);
           setName(data.user.name);
-          
-          // Update the streak milestone notification based on real database streak
-          setNotifications(prev => 
-            prev.map(n => 
-              n.id === "2" 
-                ? { ...n, description: `Keep it up! You are maintaining a ${data.user.currentStreak}-day study streak.` }
-                : n
-            )
-          );
         }
       })
       .catch((err) => console.error("Error fetching header auth:", err));
+  }, []);
+
+  // Fetch notifications from the database
+  useEffect(() => {
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.notifications) {
+          setNotifications(data.notifications);
+        }
+      })
+      .catch((err) => console.error("Error fetching notifications:", err));
   }, []);
 
   const handleLogout = async () => {
@@ -82,12 +58,22 @@ export default function Header() {
     }
   };
 
-  const handleMarkAllAsRead = () => {
+  const handleMarkAllAsRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    try {
+      await fetch("/api/notifications", { method: "PATCH" });
+    } catch (err) {
+      console.error("Error marking notifications as read:", err);
+    }
   };
 
-  const handleDismissNotification = (id: string) => {
+  const handleDismissNotification = async (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
+    try {
+      await fetch(`/api/notifications?id=${id}`, { method: "DELETE" });
+    } catch (err) {
+      console.error("Error dismissing notification:", err);
+    }
   };
 
   const hasUnread = notifications.some(n => !n.read);

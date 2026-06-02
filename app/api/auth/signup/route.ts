@@ -111,6 +111,30 @@ export async function POST(request: Request) {
             content: "Neural pathways are essential for the transmission of signals throughout the central nervous system. These connections, formed by bundles of axons, facilitate communication between different regions of the brain and the spinal cord.\n\nThe capacity of the brain to change and adapt throughout life is known as neuroplasticity. This occurs through the strengthening or weakening of neural pathways in response to learning and experience.\n\n### Types of Neural Transmission\n*   **Electrical Synapses:** Direct physical connections between neurons allowing for rapid signal transfer.\n*   **Chemical Synapses:** Use neurotransmitters to relay signals across a synaptic cleft.\n\nWhen studying these pathways, it is crucial to consider the role of myelin—a fatty insulation layer that significantly increases the speed of electrical impulses along the axon. Degeneration of myelin is often linked to various neurological conditions.",
           },
         },
+        notifications: {
+          createMany: {
+            data: [
+              {
+                title: "Welcome to StudyFlow!",
+                description: "Your dynamic workspace and default subjects have been initialized. Start exploring!",
+                icon: "auto_stories",
+                color: "text-primary bg-primary/10 border-primary/20",
+              },
+              {
+                title: "Streak Started 🔥",
+                description: "Your 12-day study streak has begun. Keep logging study sessions to maintain it!",
+                icon: "local_fire_department",
+                color: "text-secondary bg-secondary/10 border-secondary/20",
+              },
+              {
+                title: "Level Up!",
+                description: "Congratulations! You've reached Flow Level 24. Keep pushing your limits.",
+                icon: "military_tech",
+                color: "text-tertiary bg-tertiary/10 border-tertiary/20",
+              },
+            ],
+          },
+        },
       },
     });
 

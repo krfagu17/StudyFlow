@@ -23,6 +23,7 @@ model User {
   tasks          Task[]
   notes          Note[]
   breaks         Break[]
+  notifications  Notification[]
 }
 
 model Subject {
@@ -84,4 +85,17 @@ model Break {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  time        String   @default("Just now")
+  read        Boolean  @default(false)
+  icon        String   @default("notifications")
+  color       String   @default("text-primary bg-primary/10 border-primary/20")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 }
